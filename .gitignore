@@ -1,0 +1,46 @@
+# Dependencies
+node_modules/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Build outputs
+dist/
+build/
+*.js.map
+
+# Local data
+*.db
+*.db-shm
+*.db-wal
+.context-pilot/
+
+# ML models (large files)
+models/
+*.bin
+*.safetensors
+
+# Environment
+.env
+.env.local
+
+# Secrets
+*.pem
+*.key
+*.p12
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/settings.json
+.idea/
+
+# Logs
+*.log
+logs/
+
+# pnpm
+.pnpm-debug.log
