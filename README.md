@@ -49,18 +49,24 @@ There's no universal layer that manages **what context to inject, when, and in w
 
 ## Quick Start
 
-> ⚠️ Work in progress. Installation instructions coming soon.
-
 ```bash
-# Install
-npm install -g @context-pilot/cli
+# 1. Clone and setup
+git clone https://github.com/sallyheller/context-pilot.git
+cd context-pilot
+bash scripts/setup.sh
 
-# Initialize in your project
-cd my-project
+# 2. Initialize in your project
+cd /path/to/your-project
 context-pilot init
 
-# Add to Claude Code
-claude mcp add context-pilot -- context-pilot serve
+# 3. Index your codebase
+context-pilot index
+
+# 4. Add to Claude Code
+claude mcp add context-pilot -- context-pilot serve --project . --watch
+
+# 5. Check status anytime
+context-pilot status
 ```
 
 ## Stack
@@ -79,13 +85,13 @@ claude mcp add context-pilot -- context-pilot serve
 ## Roadmap
 
 - [x] Project architecture
-- [ ] MCP server scaffold
-- [ ] Embedding engine (indexing + semantic search)
-- [ ] Knowledge graph construction
-- [ ] Intelligent context ranking
-- [ ] CLI (`init`, `status`, `serve`)
-- [ ] Incremental indexing + file watcher
-- [ ] FAISS support for large projects
+- [x] MCP server with 5 tools
+- [x] Embedding engine (tree-sitter + sentence-transformers)
+- [x] Knowledge graph (networkx)
+- [x] Intelligent context ranking (semantic + graph + recency)
+- [x] CLI (`init`, `index`, `status`, `serve`)
+- [x] Incremental indexing + file watcher (`--watch`)
+- [x] FAISS support for large projects (auto, >500 chunks)
 
 ## Contributing
 
