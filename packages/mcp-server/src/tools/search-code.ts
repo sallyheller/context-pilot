@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { PythonBridge } from "../bridge/python-bridge.js";
 
 export const searchCodeSchema = z.object({
   query: z.string().describe("Semantic search query"),
@@ -8,11 +9,16 @@ export const searchCodeSchema = z.object({
 
 export type SearchCodeInput = z.infer<typeof searchCodeSchema>;
 
-export async function handleSearchCode(input: SearchCodeInput): Promise<string> {
-  // TODO Phase 2: semantic search via Python embedding engine
-  return JSON.stringify({
+export async function handleSearchCode(
+  input: SearchCodeInput,
+  bridge: PythonBridge,
+  projectPath: string
+): Promise<string> {
+  const result = await bridge.call("search", {
     query: input.query,
-    results: [],
-    message: "Search engine not yet available. Coming in Phase 2.",
+    project_path: projectPath,
+    k: input.k ?? 10,
+    filter_type: input.filter_type ?? "any",
   });
+  return JSON.stringify(result);
 }

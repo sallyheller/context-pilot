@@ -5,10 +5,11 @@ import { openDatabase } from "./storage/sqlite.js";
 import { createServer } from "./server.js";
 
 const DB_PATH = join(homedir(), ".context-pilot", "db.sqlite");
+const PROJECT_PATH = process.env.CONTEXT_PILOT_PROJECT ?? process.cwd();
 
 async function main(): Promise<void> {
   const db = openDatabase(DB_PATH);
-  const server = createServer(db);
+  const server = createServer(db, PROJECT_PATH);
   const transport = new StdioServerTransport();
   await server.connect(transport);
 }

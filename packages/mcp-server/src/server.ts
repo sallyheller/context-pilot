@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { randomUUID } from "crypto";
 import type Database from "better-sqlite3";
+import { PythonBridge } from "./bridge/python-bridge.js";
 import { queryContextSchema, handleQueryContext } from "./tools/query-context.js";
 import { indexProjectSchema, handleIndexProject } from "./tools/index-project.js";
 import { rememberSchema, handleRemember } from "./tools/remember.js";
@@ -10,7 +11,10 @@ import { searchCodeSchema, handleSearchCode } from "./tools/search-code.js";
 const DEFAULT_PROJECT_ID = "default";
 const SESSION_ID = randomUUID();
 
-export function createServer(db: Database.Database): McpServer {
+export function createServer(db: Database.Database, projectPath: string): McpServer {
+  const bridge = new PythonBridge();
+  bridge.start();
+
   const server = new McpServer({
     name: "context-pilot",
     version: "0.1.0",
@@ -21,7 +25,11 @@ export function createServer(db: Database.Database): McpServer {
     "Retrieves the most relevant code context for a given prompt. Call this before generating code to get related functions, patterns, and architectural decisions.",
     queryContextSchema.shape,
     async ({ prompt, active_file, token_budget, context_types }) => {
-      const result = await handleQueryContext({ prompt, active_file, token_budget, context_types });
+      const result = await handleQueryContext(
+        { prompt, active_file, token_budget, context_types },
+        bridge,
+        projectPath
+      );
       return { content: [{ type: "text", text: result }] };
     }
   );
@@ -31,7 +39,7 @@ export function createServer(db: Database.Database): McpServer {
     "Index or re-index the project codebase. Run when starting a new session or after significant changes.",
     indexProjectSchema.shape,
     async ({ project_path, force, paths }) => {
-      const result = await handleIndexProject({ project_path, force, paths });
+      const result = await handleIndexProject({ project_path, force, paths }, bridge);
       return { content: [{ type: "text", text: result }] };
     }
   );
@@ -65,7 +73,11 @@ export function createServer(db: Database.Database): McpServer {
     "Semantically search the codebase for functions, classes, or patterns.",
     searchCodeSchema.shape,
     async ({ query, k, filter_type }) => {
-      const result = await handleSearchCode({ query, k, filter_type });
+      const result = await handleSearchCode(
+        { query, k, filter_type },
+        bridge,
+        projectPath
+      );
       return { content: [{ type: "text", text: result }] };
     }
   );
